@@ -20,7 +20,12 @@
 
 A personal investment tracker for stocks, real estate, fixed income, and other assets. It records buys, sells, and income over time, computes cumulative returns, and compares performance against relevant market benchmarks.
 
-Stack: not decided yet. Prefer the simplest thing that works (e.g. a single-file HTML app) until requirements force more. Update this section once chosen.
+Stack: TypeScript, Vitest, decimal.js. Static web app (Vite) that runs locally and deploys to Netlify, with optional Supabase sync. Prefer the simplest thing that works.
+
+- `src/domain/` — calculation engine, no I/O: ledger replay with average cost (`holdings.ts`), FX (`fx.ts`), valuation (`valuation.ts`), portfolio series and flows per scope (`portfolio.ts`), XIRR/TWR (`returns.ts`), PME/KS-PME (`benchmark.ts`), month-end manual values (`monthlyClose.ts`), validation of new transactions (`validate.ts`).
+- `src/data/` — CSV/JSON import and export.
+- `samples/` — synthetic demo portfolio (fictional tickers and prices). `tests/` — hand-verified cases.
+- `npm test`, `npm run typecheck`. `node scripts/crossval.ts <dir>` checks the engine against a reference dataset kept outside the repo.
 
 ## Domain rules
 

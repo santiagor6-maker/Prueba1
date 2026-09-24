@@ -1,0 +1,44 @@
+date,account,type,asset,qty,amount,ccy,fee,estimated,transfer_id,note
+2025-01-05,inmueble,COMMITMENT,APTO-DEMO,,-380000000,COP,,,,precio contrato (demo)
+2025-01-06,broker-usd,DEPOSIT,,,6000,USD,,,,
+2025-01-06,broker-usd,BUY,SMPL,20,-1972.10,USD,1.50,,,
+2025-01-06,broker-usd,BUY,ACME,50,-1906.50,USD,1.50,,,
+2025-01-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-01-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-01-15,broker-cop,DEPOSIT,,,10100000,COP,,,,
+2025-01-15,broker-cop,BUY,ANDES,800,-10011024.00,COP,20000,,,
+2025-01-20,fondo,DEPOSIT,,,3000000,COP,,,,
+2025-01-20,fondo,BUY,FONDO-DEMO,,-3000000,COP,,,,aporte
+2025-01-31,fondo,VALUATION,FONDO-DEMO,,3002685,COP,,,,extracto
+2025-01-31,inmueble,VALUATION,APTO-DEMO,,384560000,COP,,true,,precio de lista
+2025-02-03,broker-usd,BUY,COPY-TECH,,-1500,USD,,,,copia de portafolio
+2025-02-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-02-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-02-28,broker-usd,VALUATION,COPY-TECH,,1527.46,USD,,,,valor del bróker al cierre
+2025-02-28,fondo,VALUATION,FONDO-DEMO,,3024384,COP,,,,extracto
+2025-03-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-03-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-03-12,broker-usd,DIVIDEND,SMPL,,11.20,USD,,true,,neto de retención 30 %
+2025-03-31,broker-usd,VALUATION,COPY-TECH,,1549.76,USD,,,,valor del bróker al cierre
+2025-03-31,fondo,VALUATION,FONDO-DEMO,,3082746,COP,,,,extracto
+2025-03-31,inmueble,VALUATION,APTO-DEMO,,389174720,COP,,true,,precio de lista
+2025-04-08,broker-usd,SELL,ACME,20,909.30,USD,1.50,,,venta parcial
+2025-04-09,broker-cop,DIVIDEND,ANDES,,96000,COP,,,,
+2025-04-09,broker-cop,WITHDRAWAL,,,-96000,COP,,,,dividendo a cuenta bancaria
+2025-04-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-04-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-04-30,broker-usd,VALUATION,COPY-TECH,,1713.41,USD,,,,valor del bróker al cierre
+2025-04-30,fondo,VALUATION,FONDO-DEMO,,3086893,COP,,,,extracto
+2025-05-05,broker-cop,DEPOSIT,,,4300000,COP,,,,
+2025-05-05,broker-cop,TRANSFER_OUT,,,-4300000,COP,,,T1,a bróker USD
+2025-05-07,broker-usd,TRANSFER_IN,,,1000,USD,,,T1,desde bróker COP
+2025-05-07,broker-usd,BUY,SMPL,8,-785.50,USD,1.50,,,
+2025-05-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-05-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-05-31,broker-usd,VALUATION,COPY-TECH,,1691.13,USD,,,,valor del bróker al cierre
+2025-05-31,fondo,VALUATION,FONDO-DEMO,,3126942,COP,,,,extracto
+2025-05-31,inmueble,VALUATION,APTO-DEMO,,393844817,COP,,true,,precio de lista
+2025-06-10,inmueble,DEPOSIT,,,4000000,COP,,,,
+2025-06-10,inmueble,CAPITAL_CALL,APTO-DEMO,,-4000000,COP,,,,cuota mensual
+2025-06-30,broker-usd,VALUATION,COPY-TECH,,1636.67,USD,,,,valor del bróker al cierre
+2025-06-30,fondo,VALUATION,FONDO-DEMO,,3167499,COP,,,,extracto

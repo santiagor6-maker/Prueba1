@@ -1,0 +1,71 @@
+{
+  "accounts": [
+    {
+      "id": "broker-cop",
+      "name": "Bróker COP (demo)",
+      "ccy": "COP"
+    },
+    {
+      "id": "broker-usd",
+      "name": "Bróker USD (demo)",
+      "ccy": "USD"
+    },
+    {
+      "id": "fondo",
+      "name": "Fondo voluntario (demo)",
+      "ccy": "COP"
+    },
+    {
+      "id": "inmueble",
+      "name": "Apartamento sobre planos (demo)",
+      "ccy": "COP"
+    }
+  ],
+  "assets": [
+    {
+      "id": "SMPL",
+      "name": "Sample Corp",
+      "ccy": "USD",
+      "bucket": "acciones_usd",
+      "pricing": "market",
+      "symbol": "SMPL"
+    },
+    {
+      "id": "ACME",
+      "name": "Acme Industries",
+      "ccy": "USD",
+      "bucket": "acciones_usd",
+      "pricing": "market",
+      "symbol": "ACME"
+    },
+    {
+      "id": "ANDES",
+      "name": "Andes Energía SA",
+      "ccy": "COP",
+      "bucket": "acciones_cop",
+      "pricing": "market",
+      "symbol": "ANDES"
+    },
+    {
+      "id": "COPY-TECH",
+      "name": "Copy portfolio Tech (demo)",
+      "ccy": "USD",
+      "bucket": "acciones_usd",
+      "pricing": "manual"
+    },
+    {
+      "id": "FONDO-DEMO",
+      "name": "Fondo balanceado (demo)",
+      "ccy": "COP",
+      "bucket": "fondos",
+      "pricing": "manual"
+    },
+    {
+      "id": "APTO-DEMO",
+      "name": "Apartamento 60 m² (demo)",
+      "ccy": "COP",
+      "bucket": "inmobiliario",
+      "pricing": "manual"
+    }
+  ]
+}

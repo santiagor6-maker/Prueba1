@@ -1,0 +1,9 @@
+node_modules/
+dist/
+# Personal financial data never goes into the repo
+/data/
+*.xlsx
+*.xls
+*.csv
+!samples/*.csv
+.env*
