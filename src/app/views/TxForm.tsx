@@ -263,7 +263,7 @@ export function TxForm({ editing, onDone }: { editing?: Transaction; onDone: () 
             {d.newAsset.pricing === 'market' && (
               <label class="field">
                 Símbolo de cotización
-                <input value={d.newAsset.symbol ?? ''} placeholder="MSFT, CSPX.L, PFCIBEST.CL" onInput={(e) => up({ newAsset: { ...d.newAsset, symbol: (e.target as HTMLInputElement).value.toUpperCase() } })} />
+                <input value={d.newAsset.symbol ?? ''} placeholder="p. ej. AAPL, IWDA.AS, ECOPETROL.CL" onInput={(e) => up({ newAsset: { ...d.newAsset, symbol: (e.target as HTMLInputElement).value.toUpperCase() } })} />
               </label>
             )}
           </div>
