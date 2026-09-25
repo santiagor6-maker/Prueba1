@@ -83,6 +83,8 @@ export function annualize(cumulative: number, from: IsoDate, to: IsoDate): numbe
 
 export interface Performance {
   from: IsoDate;
+  /** Start of the measured history: `from`, or the first flow when the portfolio did not exist at `from`. */
+  since: IsoDate;
   to: IsoDate;
   startValue: Decimal;
   endValue: Decimal;
@@ -117,6 +119,7 @@ export function performance(s: Series, from: IsoDate, to: IsoDate): Performance 
   const since = first.value.isZero() && flows[0] ? flows[0].date : from;
   return {
     from,
+    since,
     to,
     startValue: first.value,
     endValue: last.value,

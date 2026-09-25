@@ -3,7 +3,7 @@ import { TX_TYPES } from '../domain/types.ts';
 import type { Transaction, TxType } from '../domain/types.ts';
 
 /** Ledger CSV columns. Extra columns are ignored on import; blank cells mean "not set". */
-export const LEDGER_COLUMNS = ['date', 'account', 'type', 'asset', 'qty', 'amount', 'ccy', 'fee', 'estimated', 'transfer_id', 'note'] as const;
+export const LEDGER_COLUMNS = ['id', 'date', 'account', 'type', 'asset', 'qty', 'amount', 'ccy', 'fee', 'estimated', 'transfer_id', 'note'] as const;
 
 /** RFC 4180 rows: comma-separated, fields may be double-quoted with "" as an escaped quote. */
 export function parseCsv(text: string): string[][] {
@@ -97,7 +97,7 @@ export function toLedgerCsv(txs: readonly Transaction[]): string {
   const lines = [LEDGER_COLUMNS.join(',')];
   for (const t of txs) {
     lines.push(
-      [t.date, t.account, t.type, t.asset, t.qty?.toString(), t.amount.toString(), t.ccy, t.fee?.toString(),
+      [t.id, t.date, t.account, t.type, t.asset, t.qty?.toString(), t.amount.toString(), t.ccy, t.fee?.toString(),
         t.estimated === undefined ? undefined : String(t.estimated), t.transferId, t.note].map(cell).join(','),
     );
   }

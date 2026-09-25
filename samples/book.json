@@ -67,5 +67,16 @@
       "bucket": "inmobiliario",
       "pricing": "manual"
     }
+  ],
+  "benchmarks": [
+    {
+      "symbol": "BENCH:DEMO-TR",
+      "name": "Índice demo (retorno total)",
+      "buckets": [
+        "acciones_usd",
+        "acciones_cop",
+        "fondos"
+      ]
+    }
   ]
 }

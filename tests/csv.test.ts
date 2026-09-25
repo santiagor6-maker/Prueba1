@@ -11,7 +11,7 @@ describe('CSV', () => {
   });
 
   it('round-trips a ledger exactly (decimals as strings)', () => {
-    const text = 'date,account,type,asset,qty,amount,ccy,fee,estimated,transfer_id,note\n2025-01-10,usd,BUY,AAA,0.1,-10.123456789,USD,0.5,false,,"lote 1, parcial"\n';
+    const text = 'id,date,account,type,asset,qty,amount,ccy,fee,estimated,transfer_id,note\nt1,2025-01-10,usd,BUY,AAA,0.1,-10.123456789,USD,0.5,false,,"lote 1, parcial"\n';
     const txs = parseLedgerCsv(text);
     expect(txs[0]!.amount.toString()).toBe('-10.123456789');
     expect(txs[0]!.note).toBe('lote 1, parcial');

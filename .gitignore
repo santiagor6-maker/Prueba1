@@ -7,3 +7,5 @@ dist/
 *.csv
 !samples/*.csv
 .env*
+test-results/
+playwright-report/

@@ -23,7 +23,9 @@ A personal investment tracker for stocks, real estate, fixed income, and other a
 Stack: TypeScript, Vitest, decimal.js. Static web app (Vite) that runs locally and deploys to Netlify, with optional Supabase sync. Prefer the simplest thing that works.
 
 - `src/domain/` — calculation engine, no I/O: ledger replay with average cost (`holdings.ts`), FX (`fx.ts`), valuation (`valuation.ts`), portfolio series and flows per scope (`portfolio.ts`), XIRR/TWR (`returns.ts`), PME/KS-PME (`benchmark.ts`), month-end manual values (`monthlyClose.ts`), validation of new transactions (`validate.ts`).
-- `src/data/` — CSV/JSON import and export.
+- `src/data/` — CSV/JSON import and export; `json.ts` defines the stored `Dataset` (also the backup format).
+- `src/app/` — Preact UI. `analysis.ts` turns the engine into report rows (pure, unit-tested); `views/` are the screens; data persists in the browser's IndexedDB (`store.ts`), never on a server.
+- `npm run build` produces a single self-contained `dist/index.html` that opens from disk (`scripts/inline.ts`). `npm run test:e2e` drives it with Playwright from `file://`.
 - `samples/` — synthetic demo portfolio (fictional tickers and prices). `tests/` — hand-verified cases.
 - `npm test`, `npm run typecheck`. `node scripts/crossval.ts <dir>` checks the engine against a reference dataset kept outside the repo.
 
