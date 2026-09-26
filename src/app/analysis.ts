@@ -62,11 +62,19 @@ export interface GrowthPoint {
   benches: Record<string, number>;
 }
 
+/** Value of the scope and the money put in so far (start value + net flows), per valuation date. */
+export interface HistoryPoint {
+  date: IsoDate;
+  value: number;
+  invested: number;
+}
+
 export interface ScopeResult {
   value: Decimal;
   perf?: Performance;
   benches: BenchResult[];
   growth: GrowthPoint[];
+  history: HistoryPoint[];
   error?: string;
 }
 
@@ -104,7 +112,7 @@ function message(e: unknown): string {
 }
 
 export function analyzeScope(ctx: Context, scope: Scope, ccy: Ccy, asOf: IsoDate, window: Window, benches: readonly Benchmark[]): ScopeResult {
-  const empty: ScopeResult = { value: ZERO, benches: [], growth: [] };
+  const empty: ScopeResult = { value: ZERO, benches: [], growth: [], history: [] };
   try {
     const probe = portfolioSeries(ctx.book, ctx.ledger, scope, ccy, [asOf]);
     const value = probe.values[0]!.value;
@@ -129,6 +137,13 @@ export function analyzeScope(ctx: Context, scope: Scope, ccy: Ccy, asOf: IsoDate
       ...(perf.startValue.isZero() ? [] : [{ date: from, amount: perf.startValue }]),
       ...s.flows.filter((f) => f.date > from && f.date <= asOf),
     ];
+    const history: HistoryPoint[] = [];
+    let invested = ZERO;
+    let k = 0;
+    for (const v of s.values) {
+      for (; k < flows.length && flows[k]!.date <= v.date; k++) invested = invested.plus(flows[k]!.amount);
+      if (v.date >= perf.since) history.push({ date: v.date, value: v.value.toNumber(), invested: invested.toNumber() });
+    }
     const results: BenchResult[] = benches.map((b) => {
       try {
         const level = (d: IsoDate) => {
@@ -146,7 +161,7 @@ export function analyzeScope(ctx: Context, scope: Scope, ccy: Ccy, asOf: IsoDate
         return { symbol: b.symbol, name: b.name, missing: message(e) };
       }
     });
-    return { value: perf.endValue, perf, benches: results, growth };
+    return { value: perf.endValue, perf, benches: results, growth, history };
   } catch (e) {
     return { ...empty, error: message(e) };
   }

@@ -7,6 +7,8 @@ import { date, pct, ratio } from '../format.ts';
 import { useDataset } from '../store.ts';
 
 const COLORS = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+const sign = (x: number | undefined) => (x === undefined ? '' : x >= 0 ? 'pos' : 'neg');
+const pp = (x: number) => `${x >= 0 ? '+' : '−'}${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(Math.abs(x * 100))} pp`;
 
 export function Compare() {
   const { data } = useDataset();
@@ -25,10 +27,10 @@ export function Compare() {
       .filter((b) => !b.missing)
       .map((b, i) => ({ id: b.symbol, name: b.name, color: COLORS[i + 1]!, values: res.growth.map((g) => g.benches[b.symbol] ?? null) })),
   ];
+  const main = res.benches.find((b) => b.annual !== undefined);
   return (
     <>
-      <Filters state={f} set={set} />
-      <div class="filters">
+      <Filters state={f} set={set}>
         <label>
           Comparar
           <select value={scope} onChange={(e) => setScope((e.target as HTMLSelectElement).value)}>
@@ -38,15 +40,50 @@ export function Compare() {
             <option value="total">Portafolio total (sin índice)</option>
           </select>
         </label>
-      </div>
+      </Filters>
       {res.error && <div class="notice err">{res.error}</div>}
+      {main && res.perf && (
+        <div class="tiles">
+          <div class="tile">
+            <div>
+              <div class="label">Tu TWR anual</div>
+              <div class={`value ${sign(res.perf.twrAnnual)}`}>{pct(res.perf.twrAnnual)}</div>
+              <div class="sub">{series[0]!.name}</div>
+            </div>
+          </div>
+          <div class="tile">
+            <div>
+              <div class="label">Índice, mismo periodo</div>
+              <div class={`value ${sign(main.annual)}`}>{pct(main.annual)}</div>
+              <div class="sub">{main.name}</div>
+            </div>
+          </div>
+          <div class="tile">
+            <div>
+              <div class="label">Diferencia por año</div>
+              <div class={`value ${sign(res.perf.twrAnnual - main.annual!)}`}>{pp(res.perf.twrAnnual - main.annual!)}</div>
+              <div class={`verdict ${res.perf.twrAnnual >= main.annual! ? 'good' : 'bad'}`}>
+                <span class="icon" aria-hidden="true">{res.perf.twrAnnual >= main.annual! ? '✓' : '✗'}</span>
+                {res.perf.twrAnnual >= main.annual! ? 'Por encima del índice' : 'Por debajo del índice'}
+              </div>
+            </div>
+          </div>
+          <div class="tile">
+            <div>
+              <div class="label">KS-PME (tus mismas fechas)</div>
+              <div class={`value ${main.ksPme === undefined ? '' : main.ksPme >= 1 ? 'pos' : 'neg'}`}>{ratio(main.ksPme)}</div>
+              <div class="sub">Mayor que 1: le ganaste con tus aportes y retiros</div>
+            </div>
+          </div>
+        </div>
+      )}
       <div class="card">
         <h2>Crecimiento de 100 invertidos (TWR, {f.ccy})</h2>
         <p class="small muted">
           Desde {date(res.perf?.since)}. La línea del portafolio usa la rentabilidad ponderada por tiempo, así tus aportes y retiros no la mueven; los índices son de retorno total
           (dividendos reinvertidos).
         </p>
-        <LineChart dates={dates} series={series} format={(v) => new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(v)} reference={100} label="Crecimiento de 100 del portafolio frente a los índices" />
+        <LineChart dates={dates} series={series} format={(v) => new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(v)} reference={100} area="portfolio" label="Crecimiento de 100 del portafolio frente a los índices" />
       </div>
       <div class="card">
         <div class="table-wrap">

@@ -11,7 +11,7 @@ async function loadDemo(page: Page) {
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Empezar' })).toBeVisible();
   await page.getByRole('button', { name: 'Cargar demostración' }).first().click();
-  await expect(page.getByText('Valor del portafolio')).toBeVisible();
+  await expect(page.locator('.hero .kicker')).toHaveText('Valor del portafolio');
 }
 
 test('demo portfolio: summary, positions, comparison, persistence', async ({ page }, info) => {
@@ -22,22 +22,22 @@ test('demo portfolio: summary, positions, comparison, persistence', async ({ pag
   await page.getByRole('link', { name: 'Resumen' }).click();
   await expect(page.getByText('Tu rentabilidad (XIRR, anual)')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Acciones USD' })).toBeVisible();
-  await expect(page.getByText('vs Índice demo (retorno total)').first()).toBeVisible();
+  await expect(page.locator('.class-card').filter({ hasText: 'Acciones USD' }).getByText('Índice demo (retorno total)').first()).toBeVisible();
   await expect(page.locator('.notice.err')).toHaveCount(0);
-  const value = await page.locator('.tile .value').first().textContent();
+  const value = await page.locator('.hero .figure').textContent();
   expect(value).toMatch(/\$ \d/);
   if (shots) await page.screenshot({ path: `${shots}/resumen-${info.project.name}.png`, fullPage: true });
 
   await page.getByRole('button', { name: 'USD' }).click();
-  await expect(page.locator('.tile .value').first()).toContainText('US$');
+  await expect(page.locator('.hero .figure')).toContainText('US$');
 
   await page.getByRole('link', { name: 'Activos' }).click();
-  await expect(page.getByText('Copy portfolio Tech (demo)')).toBeVisible();
+  await expect(page.getByRole('cell', { name: /Copy portfolio Tech \(demo\)/ })).toBeVisible();
   await expect(page.getByText(/precio de lista .* anual sin apalancamiento/)).toBeVisible();
   if (shots) await page.screenshot({ path: `${shots}/activos-${info.project.name}.png`, fullPage: true });
 
   await page.getByRole('link', { name: 'Comparación' }).click();
-  await expect(page.locator('.chart svg path')).toHaveCount(2);
+  await expect(page.locator('.card .chart svg path.series')).toHaveCount(2);
   if (shots) await page.screenshot({ path: `${shots}/comparacion-${info.project.name}.png`, fullPage: true });
 
   await page.reload();

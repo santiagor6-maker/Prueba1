@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { WINDOWS, customWindow } from '../analysis.ts';
 import type { Window } from '../analysis.ts';
 import { today } from '../format.ts';
@@ -32,45 +33,48 @@ export function useFilters(): [FilterState, (f: Partial<FilterState>) => void] {
   ];
 }
 
-export function Filters({ state, set, showWindow = true }: { state: FilterState; set: (f: Partial<FilterState>) => void; showWindow?: boolean }) {
+export function Filters({ state, set, showWindow = true, children }: { state: FilterState; set: (f: Partial<FilterState>) => void; showWindow?: boolean; children?: ComponentChildren }) {
   return (
-    <div class="filters">
-      {showWindow && (
+    <div class="toolbar">
+      <div class="filters">
+        {showWindow && (
+          <label>
+            Periodo
+            <select
+              value={state.window.startsWith('from:') ? 'custom' : state.window}
+              onChange={(e) => {
+                const v = (e.target as HTMLSelectElement).value;
+                set({ window: v === 'custom' ? customWindow(`${Number(state.asOf.slice(0, 4)) - 1}-12-31`) : (v as Window) });
+              }}
+            >
+              {WINDOWS.map((w) => (
+                <option value={w.id}>{w.label}</option>
+              ))}
+              <option value="custom">Desde una fecha…</option>
+            </select>
+          </label>
+        )}
+        {showWindow && state.window.startsWith('from:') && (
+          <label>
+            Desde
+            <input type="date" value={state.window.slice(5)} max={state.asOf} onChange={(e) => (e.target as HTMLInputElement).value && set({ window: customWindow((e.target as HTMLInputElement).value) })} />
+          </label>
+        )}
         <label>
-          Periodo
-          <select
-            value={state.window.startsWith('from:') ? 'custom' : state.window}
-            onChange={(e) => {
-              const v = (e.target as HTMLSelectElement).value;
-              set({ window: v === 'custom' ? customWindow(`${Number(state.asOf.slice(0, 4)) - 1}-12-31`) : (v as Window) });
-            }}
-          >
-            {WINDOWS.map((w) => (
-              <option value={w.id}>{w.label}</option>
+          Fecha de corte
+          <input type="date" value={state.asOf} max={today()} onChange={(e) => set({ asOf: (e.target as HTMLInputElement).value || today() })} />
+        </label>
+        <div class="field">
+          Moneda
+          <div class="seg" role="group" aria-label="Moneda">
+            {(['COP', 'USD'] as const).map((c) => (
+              <button type="button" aria-pressed={state.ccy === c} onClick={() => set({ ccy: c })}>
+                {c}
+              </button>
             ))}
-            <option value="custom">Desde una fecha…</option>
-          </select>
-        </label>
-      )}
-      {showWindow && state.window.startsWith('from:') && (
-        <label>
-          Desde
-          <input type="date" value={state.window.slice(5)} max={state.asOf} onChange={(e) => (e.target as HTMLInputElement).value && set({ window: customWindow((e.target as HTMLInputElement).value) })} />
-        </label>
-      )}
-      <label>
-        Fecha de corte
-        <input type="date" value={state.asOf} max={today()} onChange={(e) => set({ asOf: (e.target as HTMLInputElement).value || today() })} />
-      </label>
-      <div class="field">
-        Moneda
-        <div class="seg" role="group" aria-label="Moneda">
-          {(['COP', 'USD'] as const).map((c) => (
-            <button type="button" aria-pressed={state.ccy === c} onClick={() => set({ ccy: c })}>
-              {c}
-            </button>
-          ))}
+          </div>
         </div>
+        {children}
       </div>
     </div>
   );

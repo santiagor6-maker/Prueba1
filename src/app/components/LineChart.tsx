@@ -16,10 +16,17 @@ interface Props {
   /** Horizontal reference line (e.g. 100 for growth of 100). */
   reference?: number;
   label: string;
+  /** Plot height in px (default 320). */
+  height?: number;
+  /** Series id drawn with a 10% area wash down to the axis floor. */
+  area?: string;
+  /** Axis tick format (defaults to `format`). */
+  axisFormat?: (v: number) => string;
+  /** No direct end labels (small charts: the legend and tooltip carry identity). */
+  compact?: boolean;
 }
 
-const H = 320;
-const M = { l: 52, r: 132, t: 14, b: 28 };
+const M = { l: 58, r: 132, t: 14, b: 28 };
 const ms = (d: string) => Date.parse(`${d}T00:00:00Z`);
 
 function niceTicks(lo: number, hi: number, n = 5): number[] {
@@ -33,7 +40,9 @@ function niceTicks(lo: number, hi: number, n = 5): number[] {
 }
 
 /** Single-axis line chart: crosshair + one tooltip listing every series, direct end labels, legend, table view. */
-export function LineChart({ dates, series, format, reference, label }: Props) {
+export function LineChart({ dates, series, format, reference, label, height, area, axisFormat, compact }: Props) {
+  const H = height ?? 320;
+  const fmtAxis = axisFormat ?? format;
   const box = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(800);
   const [hover, setHover] = useState<number | null>(null);
@@ -47,7 +56,7 @@ export function LineChart({ dates, series, format, reference, label }: Props) {
   if (dates.length < 2) return <p class="muted">No hay suficientes datos para graficar este periodo.</p>;
 
   const narrow = w < 560;
-  const mr = narrow ? 12 : M.r;
+  const mr = narrow || compact ? 12 : M.r;
   const x0 = ms(dates[0]!);
   const x1 = ms(dates[dates.length - 1]!);
   const all = series.flatMap((s) => s.values.filter((v): v is number => v !== null));
@@ -136,7 +145,7 @@ export function LineChart({ dates, series, format, reference, label }: Props) {
             <g>
               <line x1={M.l} x2={w - mr} y1={Y(t)} y2={Y(t)} stroke="var(--grid)" stroke-width={1} />
               <text x={M.l - 8} y={Y(t) + 4} text-anchor="end" font-size="11" fill="var(--muted)">
-                {format(t)}
+                {fmtAxis(t)}
               </text>
             </g>
           ))}
@@ -146,10 +155,21 @@ export function LineChart({ dates, series, format, reference, label }: Props) {
               {years > 2.5 ? String(Number(d.slice(0, 4)) + 1) : monthLabel(d)}
             </text>
           ))}
+          {series
+            .filter((s) => s.id === area)
+            .map((s) => {
+              const pts = s.values.map((v, i) => (v === null ? null : `${X(dates[i]!).toFixed(1)},${Y(v).toFixed(1)}`));
+              const first = pts.findIndex((p) => p !== null);
+              const lastI = pts.length - 1 - [...pts].reverse().findIndex((p) => p !== null);
+              if (first < 0) return null;
+              const floor = Y(Math.max(lo, Math.min(hi, 0)));
+              const d = `M${X(dates[first]!).toFixed(1)},${floor}L${pts.slice(first, lastI + 1).filter(Boolean).join('L')}L${X(dates[lastI]!).toFixed(1)},${floor}Z`;
+              return <path class="area" d={d} fill={s.color} fill-opacity={0.1} stroke="none" />;
+            })}
           {series.map((s) => (
-            <path d={path(s.values)} fill="none" stroke={s.color} stroke-width={s.id === 'portfolio' ? 2.5 : 2} stroke-linejoin="round" stroke-linecap="round" />
+            <path class="series" d={path(s.values)} fill="none" stroke={s.color} stroke-width={s.id === 'portfolio' ? 2.5 : 2} stroke-linejoin="round" stroke-linecap="round" />
           ))}
-          {!narrow &&
+          {!narrow && !compact &&
             ends.map((e) => (
               <text x={w - mr + 8} y={e.y + 4} font-size="12" fill="var(--ink-2)">
                 <tspan font-weight="600" fill="var(--ink)">{format(e.v)}</tspan>

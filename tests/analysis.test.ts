@@ -41,6 +41,15 @@ describe('report on the synthetic sample', () => {
     expect(usd.growth.at(-1)!.portfolio).toBeCloseTo(100 * (1 + usd.perf!.twr), 9);
   });
 
+  it('value history ends at the report value and the net money put in', () => {
+    const h = rep.total.history;
+    const p = rep.total.perf!;
+    expect(h.at(-1)!.date).toBe('2025-06-30');
+    expect(h.at(-1)!.value).toBeCloseTo(p.endValue.toNumber(), 6);
+    expect(h.at(-1)!.invested).toBeCloseTo(p.startValue.plus(p.netFlows).toNumber(), 6);
+    expect(h[0]!.date >= p.since).toBe(true);
+  });
+
   it('a custom window starts on the chosen date', () => {
     const r = analyze(ctx, 'COP', '2025-06-30', customWindow('2025-03-31'));
     expect(r.total.perf!.from).toBe('2025-03-31');

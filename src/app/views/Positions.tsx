@@ -6,7 +6,8 @@ import { analyze, bucketLabel } from '../analysis.ts';
 import type { PositionRow } from '../analysis.ts';
 import { contextOf } from '../context.ts';
 import { Filters, useFilters } from '../components/Filters.tsx';
-import { date, money, num, pct } from '../format.ts';
+import { date, money, moneyShort, num, pct } from '../format.ts';
+import { BarList, byClassOrder, classColor } from '../components/Bars.tsx';
 import { useDataset } from '../store.ts';
 
 function queryParam(name: string): string | undefined {
@@ -54,8 +55,7 @@ export function Positions() {
 
   return (
     <>
-      <Filters state={f} set={set} showWindow={false} />
-      <div class="filters">
+      <Filters state={f} set={set} showWindow={false}>
         <label>
           Clase
           <select value={bucket} onChange={(e) => setBucket((e.target as HTMLSelectElement).value)}>
@@ -68,13 +68,42 @@ export function Positions() {
         <label style="flex-direction:row;align-items:center;gap:6px">
           <input type="checkbox" checked={closed} onChange={(e) => setClosed((e.target as HTMLInputElement).checked)} /> Mostrar posiciones cerradas
         </label>
-      </div>
+      </Filters>
       {listPrice.map((l) => (
         <div class="notice info">
           <strong>{l.name}</strong>: precio de lista {money(l.first.amount, l.ccy)} ({date(l.first.date)}) → {money(l.last.amount, l.ccy)} ({date(l.last.date)}) ={' '}
           {pct(l.cum)} total, {pct(l.annual)} anual sin apalancamiento. Valor estimado (precio de lista), no un avalúo.
         </div>
       ))}
+      {open.length > 1 && (
+        <div class="grid2">
+          <div class="card">
+            <div class="card-head">
+              <h2>Mayores posiciones</h2>
+              <span class="small muted">Valor al {date(f.asOf)}</span>
+            </div>
+            <BarList
+              label="Mayores posiciones por valor"
+              items={open.slice(0, 10).map((p) => ({ label: p.name, value: p.value.toNumber(), color: classColor(p.bucket), text: moneyShort(p.value, f.ccy), title: `${p.name} · ${bucketLabel(p.bucket)}` }))}
+            />
+            <div class="legend" style="margin-top:12px">
+              {[...new Set(open.slice(0, 10).map((p) => p.bucket))].sort(byClassOrder).map((b) => (
+                <span>
+                  <span class="key" style={`background:${classColor(b)};height:8px;width:8px;border-radius:2px`} />
+                  {bucketLabel(b)}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h2>Ganancia o pérdida sin realizar</h2>
+              <span class="small muted">Las 5 mejores y las 5 peores</span>
+            </div>
+            <BarList label="Ganancia o pérdida no realizada por activo" items={movers(open).map((p) => ({ label: p.name, value: p.unrealized.toNumber(), color: p.unrealized.isNeg() ? 'var(--dv-neg)' : 'var(--dv-pos)', text: moneyShort(p.unrealized, f.ccy) }))} />
+          </div>
+        </div>
+      )}
       <div class="card">
         <div class="table-wrap">
           <table>
@@ -97,6 +126,7 @@ export function Positions() {
                 return (
                   <tr key={p.account + p.asset}>
                     <td style="min-width:200px">
+                      <span class="wbar" style={`width:8px;height:8px;border-radius:2px;background:${classColor(p.bucket)}`} />
                       {p.name}
                       <div class="small muted">
                         {p.accountName} · {bucketLabel(p.bucket)}
@@ -136,4 +166,12 @@ export function Positions() {
       </div>
     </>
   );
+}
+
+/** The five largest unrealized gains and the five largest losses, best first. */
+function movers(open: PositionRow[]): PositionRow[] {
+  const byGain = [...open].sort((a, b) => b.unrealized.comparedTo(a.unrealized));
+  const top = byGain.filter((p) => p.unrealized.gt(0)).slice(0, 5);
+  const bottom = byGain.filter((p) => p.unrealized.lt(0)).slice(-5);
+  return [...top, ...bottom];
 }
