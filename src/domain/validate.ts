@@ -13,7 +13,7 @@ export interface Issue {
   message: string;
 }
 
-/** Required sign of `amount` per type: 1 positive, −1 negative, 0 exactly zero. */
+/** Required sign of `amount` per type: 1 positive, −1 negative, 0 exactly zero. A VALUATION may also be 0 (a worthless holding). */
 const SIGN: Record<TxType, 1 | -1 | 0> = {
   DEPOSIT: 1,
   TRANSFER_IN: 1,
@@ -62,7 +62,7 @@ export function validateTransaction(
 
   const sign = SIGN[tx.type];
   if (sign === 0 && !tx.amount.isZero()) err('SIGN', `${tx.type} no mueve efectivo: el monto debe ser 0`);
-  if (sign === 1 && !tx.amount.gt(0)) err('SIGN', `${tx.type}: el monto debe ser positivo`);
+  if (sign === 1 && !(tx.amount.gt(0) || (tx.type === 'VALUATION' && tx.amount.isZero()))) err('SIGN', `${tx.type}: el monto debe ser positivo`);
   if (sign === -1 && !tx.amount.lt(0)) err('SIGN', `${tx.type}: el monto debe ser negativo (sale efectivo de la cuenta)`);
 
   if (tx.qty !== undefined && !tx.qty.gt(0)) err('QTY', 'La cantidad debe ser mayor que 0');

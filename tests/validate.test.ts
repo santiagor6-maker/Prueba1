@@ -45,6 +45,13 @@ describe('validating a new buy/sell', () => {
     expect(codes(tx('2026-01-02', 'usd', 'DEPOSIT', 1000))).toEqual(['warning:DUPLICATE']);
   });
 
+  it('accepts a zero month-end value (a worthless holding) but not a negative one', () => {
+    const l = [...ledger, tx('2026-01-05', 'usd', 'BUY', -100, { id: '4', asset: 'COPY' })];
+    const c = (a: number) => validateTransaction(l, tx('2026-04-30', 'usd', 'VALUATION', a, { asset: 'COPY' }), ref).map((i) => i.code);
+    expect(c(0)).toEqual([]);
+    expect(c(-1)).toEqual(['SIGN']);
+  });
+
   it('a manual value for a market-priced asset is only a fallback', () => {
     expect(codes(tx('2026-04-30', 'usd', 'VALUATION', 900, { asset: 'AAA' }))).toEqual(['warning:VALUATION_IGNORED']);
   });
